@@ -116,7 +116,7 @@ if aba_selecionada == "MMM SIMULADOR":
         st.plotly_chart(fig_pesos)
 
 # Parte 2: Media Behavior
-elif aba_selecionada == ""MMM Media Behavior":
+elif aba_selecionada == "MMM Media Behavior":
     st.header("Comportamento de Mídia")
 
     # Inicialização da variável investimentos com valores padrão
