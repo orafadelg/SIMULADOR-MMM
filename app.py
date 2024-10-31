@@ -10,6 +10,10 @@ st.title("Simulador de Marketing Mix Modeling")
 st.sidebar.title("OKIAR 360º")
 aba_selecionada = st.sidebar.selectbox("Selecione a aba", ["MMM SIMULADOR", "MMM Media Behavior", "BRAIN", "MERIDIO", "MMX", "UXM"])
 
+# Texto explicativo
+st.sidebar.write("**SUITE MODULAR E ALWAYS ON DE PLANEJAMENTO INTEGRADO DE MENSURAÇÃO DE MARKETING.**")
+st.sidebar.write("GUIDANCE DE MARCA E PRODUTO, AUDITORIA DE ROI E SUPORTE NA DEFINIÇÃO DE BUDGETS E PRIORIDADES DO MARKETING.")
+
 # Definindo os canais e investimentos iniciais
 investimentos_iniciais = {
     "Google Ads": 100,
