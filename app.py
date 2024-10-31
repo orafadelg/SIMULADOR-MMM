@@ -8,7 +8,7 @@ st.title("Simulador de Marketing Mix Modeling")
 
 # Sidebar com título e seleção de aba
 st.sidebar.title("OKIAR 360º")
-aba_selecionada = st.sidebar.selectbox("Selecione a aba", ["MMM", "Media Behavior", "BRAIN", "MERIDIO", "MMX", "UXM"])
+aba_selecionada = st.sidebar.selectbox("Selecione a aba", ["MMM SIMULADOR", "MMM Media Behavior", "BRAIN", "MERIDIO", "MMX", "UXM"])
 
 # Definindo os canais e investimentos iniciais
 investimentos_iniciais = {
@@ -34,7 +34,7 @@ valor_base_leads = 100
 valor_base_vendas = 10
 
 # Parte 1:  MMM
-if aba_selecionada == "MMM":
+if aba_selecionada == "MMM SIMULADOR":
     st.header("Dashboard de Marketing Mix Modeling")
 
     # Bloco Inicial: KPIs Principais
@@ -112,7 +112,7 @@ if aba_selecionada == "MMM":
         st.plotly_chart(fig_pesos)
 
 # Parte 2: Media Behavior
-elif aba_selecionada == "Media Behavior":
+elif aba_selecionada == ""MMM Media Behavior":
     st.header("Comportamento de Mídia")
 
     # Inicialização da variável investimentos com valores padrão
