@@ -34,7 +34,7 @@ valor_base_leads = 100
 valor_base_vendas = 10
 
 # Parte 1: Dash MMM
-if aba_selecionada == "Dash MMM":
+if aba_selecionada == "Dash iMM":
     st.header("Dashboard de Marketing Mix Modeling")
 
     # Bloco Inicial: KPIs Principais
@@ -168,7 +168,7 @@ elif aba_selecionada == "Media Behavior":
 
 
 # Aba 3: Brand
-elif aba_selecionada == "Brand":
+elif aba_selecionada == "TRACKfluencers":
     st.header("MARCA, CAMPANHAS & INFLUÊNCIA")
 
     # Matriz de performance por importância
@@ -207,7 +207,7 @@ elif aba_selecionada == "Brand":
     st.plotly_chart(fig_eficiencia)
 
 # Aba 4: Talents
-elif aba_selecionada == "Talents":
+elif aba_selecionada == "BRAINfluencers":
     st.header("OS TALENTOS QUE SUA MARCA PRECISA")
 
     # Gráfico de barra de influence power por influenciador
