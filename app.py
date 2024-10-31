@@ -216,20 +216,30 @@ elif aba_selecionada == "BRAIN":
         "Marca 1": [85, 60, 45],
         "Marca 2": [75, 55, 35],
         "Marca 3": [70, 50, 30],
-        "Marca 4": [65, 45, 25],
-        "Marca 5": [60, 40, 20]
+        "Marca 4": [65, 45, 25]
     }
-    for marca, funil in funil_data.items():
+    
+    col1, col2, col3, col4 = st.columns(4)
+    
+    for marca, col in zip(funil_data.keys(), [col1, col2, col3, col4]):
+        funil = funil_data[marca]
         fig_funil = go.Figure(go.Bar(
-            x=funil[::-1],  # Inverte para empilhamento correto
+            x=funil,  # Lembrança, Consideração, Preferência
             y=["Lembrança", "Consideração", "Preferência"],
             orientation='h',
             marker=dict(color=["#ff9999", "#ff6666", "#ff3333"]),
-            text=[f"{val}%" for val in funil[::-1]],
+            text=[f"{val}%" for val in funil],
             textposition='inside'
         ))
-        fig_funil.update_layout(title=f"Funil de {marca}", xaxis_title="%", yaxis=dict(autorange="reversed"))
-        st.plotly_chart(fig_funil)
+        fig_funil.update_layout(
+            title=f"Funil de {marca}",
+            xaxis=dict(showticklabels=False),  # Remove ticks do eixo x para visualização simplificada
+            yaxis=dict(autorange="reversed", showline=False, showticklabels=True),
+            bargap=0.4,
+            height=300
+        )
+        col.plotly_chart(fig_funil)
+
 
     # Radar de Atributos Comparando 3 Marcas
     st.subheader("Comparação de Atributos de Marca")
