@@ -34,7 +34,7 @@ valor_base_leads = 100
 valor_base_vendas = 10
 
 # Parte 1: Dash MMM
-if aba_selecionada == "Dash IMM":
+if aba_selecionada == "Dash MMM":
     st.header("Dashboard de Marketing Mix Modeling")
 
     # Bloco Inicial: KPIs Principais
