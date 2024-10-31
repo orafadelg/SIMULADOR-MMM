@@ -4,7 +4,7 @@ import pandas as pd
 import plotly.graph_objects as go
 
 # Título principal do aplicativo
-st.title("Simulador de Marketing Mix Modeling")
+st.title("OKIAR 360º")
 
 # Sidebar com título e seleção de aba
 st.sidebar.title("OKIAR 360º")
@@ -39,10 +39,10 @@ valor_base_vendas = 10
 
 # Parte 1:  MMM
 if aba_selecionada == "MMM SIMULADOR":
-    st.header("Dashboard de Marketing Mix Modeling")
+    st.header("Simulador Marketing Mix Modeling")
 
     # Bloco Inicial: KPIs Principais
-    st.subheader("Principais KPIs de Marketing")
+    st.subheader("Principais KPIs de Mídia")
     col1, col2, col3, col4 = st.columns(4)
 
     investimento_total = sum(investimentos_iniciais.values())
@@ -173,7 +173,7 @@ elif aba_selecionada == "MMM Media Behavior":
 
 # Aba 3: BRAIN
 elif aba_selecionada == "BRAIN":
-    st.header("MARCA, CAMPANHAS & INFLUÊNCIA")
+    st.header("SUAS AÇÕES IMPACTAM A MARCA? QUAL A IMPORTÂNCIA DE BRANDING PARA O NEGÓCIO?")
 
     # Matriz de performance por importância
     st.subheader("O que a marca é e precisa ser")
@@ -212,7 +212,7 @@ elif aba_selecionada == "BRAIN":
 
 # Parte MERIDIO: Segmentação e Personas
 elif aba_selecionada == "MERIDIO":
-    st.header("MERIDIO - Segmentação e Personas")
+    st.header("QUAIS AS PERSONAS NO SEU MERCADO E QUAIS AS ALAVANCAS DE CONSUMO?")
     
     # Bloco de seleção de personas
     st.subheader("Personas")
@@ -304,7 +304,7 @@ elif aba_selecionada == "MERIDIO":
 
 # Parte MMX: Satisfação e Modelo de Equação Estrutural
 elif aba_selecionada == "MMX":
-    st.header("MMX - Satisfação e Tracking Estrutural")
+    st.header("QUAIS AS ALAVANCAS DE LEALDADE E MONETIZAÇÃO NO SEU MERCADO?")
 
     # Bloco de métricas gerais de satisfação
     st.subheader("Métricas Gerais de Satisfação")
@@ -375,7 +375,7 @@ elif aba_selecionada == "MMX":
 
 # Parte UXM: Modelo de UX e Retorno de Experiência
 elif aba_selecionada == "UXM":
-    st.header("UXM - Avaliação da Experiência do Usuário")
+    st.header("COMO DEVE SER A EXPERIÊNCIA DIGITAL DO SEU CLIENTE E O QUANTO ISSO IMPORTA?")
 
     # Bloco inicial: Diagnóstico da Qualidade de Experiência
     st.subheader("Diagnóstico da Qualidade da Experiência")
