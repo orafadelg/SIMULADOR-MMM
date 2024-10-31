@@ -171,44 +171,107 @@ elif aba_selecionada == "MMM Media Behavior":
     st.plotly_chart(fig_previsto_realizado)
 
 
-# Aba 3: BRAIN
 elif aba_selecionada == "BRAIN":
     st.header("SUAS AÇÕES IMPACTAM A MARCA? QUAL A IMPORTÂNCIA DE BRANDING PARA O NEGÓCIO?")
 
-    # Matriz de performance por importância
-    st.subheader("O que a marca é e precisa ser")
-    atributos = ["Qualidade", "Inovação", "Confiabilidade", "Disponibilidade", "Atendimento", "Preço", "Sustentabilidade", "Design"]
-    importancia = [8, 7, 9, 5, 6, 4, 7, 8]
-    performance = [6, 8, 7, 4, 5, 3, 8, 7]
+    # Bloco Inicial: KPIs de Marca
+    st.subheader("Principais KPIs de Marca")
+    col1, col2, col3, col4 = st.columns(4)
 
-    fig_matriz = go.Figure()
-    fig_matriz.add_trace(go.Scatter(
-        x=importancia, y=performance, mode='markers+text', text=atributos, textposition="top center",
-        marker=dict(size=12, color="red")
+    kpi_lembranca = 75.2
+    kpi_consideracao = 60.5
+    kpi_brand_equity = 85.0
+    kpi_brand_impact_index = 45.3  # Percentual médio de impacto da marca
+
+    with col1:
+        st.metric("Lembrança", f"{kpi_lembranca:.1f}%")
+    with col2:
+        st.metric("Consideração", f"{kpi_consideracao:.1f}%")
+    with col3:
+        st.metric("Brand Equity", f"{kpi_brand_equity:.1f}%")
+    with col4:
+        st.metric("Brand Impact Index", f"{kpi_brand_impact_index:.1f}%")
+
+    # Bloco de Top of Mind
+    st.subheader("Top of Mind do Mercado")
+    top_of_mind_data = {
+        "Marca 1": 32,
+        "Marca 2": 27,
+        "Marca 3": 20,
+        "Marca 4": 15,
+        "Marca 5": 6
+    }
+    fig_top_of_mind = go.Figure(go.Bar(
+        x=list(top_of_mind_data.values()),
+        y=list(top_of_mind_data.keys()),
+        orientation='h',
+        marker=dict(color="red")
     ))
-    fig_matriz.update_layout(title="Matriz de Importância vs. Performance", xaxis_title="Importância", yaxis_title="Performance")
-    st.plotly_chart(fig_matriz)
+    fig_top_of_mind.update_layout(title="Top of Mind", xaxis_title="%", yaxis_title="Marcas")
+    st.plotly_chart(fig_top_of_mind)
 
-    # Gráfico de radar para impacto de influenciadores
-    st.subheader("Importância de Influência nos Atributos de Marca")
+    # Bloco de Funis de Marca
+    st.subheader("Funis de Marca")
+    funil_data = {
+        "Marca 1": [85, 60, 45],
+        "Marca 2": [75, 55, 35],
+        "Marca 3": [70, 50, 30],
+        "Marca 4": [65, 45, 25],
+        "Marca 5": [60, 40, 20]
+    }
+    for marca, funil in funil_data.items():
+        fig_funil = go.Figure(go.Bar(
+            x=funil[::-1],  # Inverte para empilhamento correto
+            y=["Lembrança", "Consideração", "Preferência"],
+            orientation='h',
+            marker=dict(color=["#ff9999", "#ff6666", "#ff3333"]),
+            text=[f"{val}%" for val in funil[::-1]],
+            textposition='inside'
+        ))
+        fig_funil.update_layout(title=f"Funil de {marca}", xaxis_title="%", yaxis=dict(autorange="reversed"))
+        st.plotly_chart(fig_funil)
+
+    # Radar de Atributos Comparando 3 Marcas
+    st.subheader("Comparação de Atributos de Marca")
+    marcas = ["Marca 1", "Marca 2", "Marca 3"]
     atributos_radar = ["Qualidade", "Inovação", "Confiabilidade", "Disponibilidade", "Atendimento", "Preço", "Sustentabilidade", "Design"]
-    influencia = [6, 7, 8, 6, 5, 6, 7, 8]
-    geral = [5, 6, 6, 4, 4, 5, 6, 6]
+    valores_marca_1 = [8, 6, 7, 5, 9, 4, 6, 7]
+    valores_marca_2 = [7, 7, 6, 6, 8, 5, 5, 6]
+    valores_marca_3 = [6, 8, 5, 7, 7, 6, 4, 5]
 
     fig_radar = go.Figure()
-    fig_radar.add_trace(go.Scatterpolar(r=influencia, theta=atributos_radar, fill='toself', name='Influência'))
-    fig_radar.add_trace(go.Scatterpolar(r=geral, theta=atributos_radar, fill='toself', name='Geral'))
-    fig_radar.update_layout(title="Impacto de Influência vs. Geral")
+    fig_radar.add_trace(go.Scatterpolar(r=valores_marca_1, theta=atributos_radar, fill='toself', name='Marca 1'))
+    fig_radar.add_trace(go.Scatterpolar(r=valores_marca_2, theta=atributos_radar, fill='toself', name='Marca 2'))
+    fig_radar.add_trace(go.Scatterpolar(r=valores_marca_3, theta=atributos_radar, fill='toself', name='Marca 3'))
+    fig_radar.update_layout(title="Radar de Atributos de Marca", polar=dict(radialaxis=dict(visible=True, range=[0, 10])))
     st.plotly_chart(fig_radar)
 
-    # Gráfico de avaliação de eficiência de influenciadores
-    st.subheader("Eficiência de Influência")
-    eficiencia = {"Autenticidade": 7, "Adequação": 8, "Relevância": 6, "Endossamento": 7}
-    fig_eficiencia = go.Figure(go.Bar(
-        x=list(eficiencia.keys()), y=list(eficiencia.values()), marker=dict(color="red")
+    # Matriz de Performance e Importância de Atributos
+    st.subheader("Matriz de Importância vs. Performance")
+    importancia = [8, 7, 9, 5, 6, 4, 7, 8]
+    performance = [6, 8, 7, 4, 5, 3, 8, 7]
+    fig_matriz = go.Figure()
+    fig_matriz.add_trace(go.Scatter(
+        x=importancia, y=performance, mode='markers+text', text=atributos_radar, textposition="top center",
+        marker=dict(size=12, color="red")
     ))
-    fig_eficiencia.update_layout(title="Avaliação de Influência por Métrica")
-    st.plotly_chart(fig_eficiencia)
+    fig_matriz.update_layout(title="Importância vs. Performance dos Atributos", xaxis_title="Importância", yaxis_title="Performance")
+    st.plotly_chart(fig_matriz)
+
+    # Gráfico de Impacto de Marca em Resultados de Negócio
+    st.subheader("Impacto da Marca nos Resultados de Negócio")
+    resultados_negocio = ["Abertura de Conta", "Uso do Aplicativo", "Adoção de Crédito", "Investimentos"]
+    impacto_marca = [0.65, 0.7, 0.5, 0.6]  # Valores fictícios de R quadrado
+
+    fig_impacto = go.Figure(go.Bar(
+        x=impacto_marca,
+        y=resultados_negocio,
+        orientation='h',
+        marker=dict(color="red")
+    ))
+    fig_impacto.update_layout(title="Impacto da Marca (R²) nos Resultados de Negócio", xaxis_title="Impacto (R²)", yaxis_title="Resultado de Negócio")
+    st.plotly_chart(fig_impacto)
+
 
 # Parte MERIDIO: Segmentação e Personas
 elif aba_selecionada == "MERIDIO":
