@@ -7,8 +7,8 @@ import plotly.graph_objects as go
 st.title("Simulador de Marketing Mix Modeling")
 
 # Sidebar com título e seleção de aba
-st.sidebar.title("DIM")
-aba_selecionada = st.sidebar.selectbox("Selecione a aba", ["Dash MMM", "Media Behavior", "Brand", "Talents", "Governança"])
+st.sidebar.title("TM.MMM OKIAR")
+aba_selecionada = st.sidebar.selectbox("Selecione a aba", ["Dash MMM", "Media Behavior", "BRAIN", "Governança"])
 
 # Definindo os canais e investimentos iniciais
 investimentos_iniciais = {
@@ -167,8 +167,8 @@ elif aba_selecionada == "Media Behavior":
     st.plotly_chart(fig_previsto_realizado)
 
 
-# Aba 3: Brand
-elif aba_selecionada == "Brand":
+# Aba 3: BRAIN
+elif aba_selecionada == "BRAIN":
     st.header("MARCA, CAMPANHAS & INFLUÊNCIA")
 
     # Matriz de performance por importância
@@ -206,34 +206,6 @@ elif aba_selecionada == "Brand":
     fig_eficiencia.update_layout(title="Avaliação de Influência por Métrica")
     st.plotly_chart(fig_eficiencia)
 
-# Aba 4: Talents
-elif aba_selecionada == "Talents":
-    st.header("OS TALENTOS QUE SUA MARCA PRECISA")
-
-    # Gráfico de barra de influence power por influenciador
-    st.subheader("Influence Power por Influenciador")
-    influenciadores = ["Influencer A", "Influencer B", "Influencer C", "Influencer D", "Influencer E", "Influencer F", "Influencer G", "Influencer H"]
-    influence_power = [80, 75, 70, 65, 60, 55, 50, 45]
-    fig_influencer = go.Figure(go.Bar(
-        x=influenciadores, y=influence_power, marker=dict(color="red")
-    ))
-    fig_influencer.update_layout(title="Influence Power dos Influenciadores", xaxis_title="Influenciador", yaxis_title="Influence Power")
-    st.plotly_chart(fig_influencer)
-
-    # Matriz de bolhas de influência por risco
-    st.subheader("Influência vs. Risco")
-    riscos = [30, 25, 20, 15, 35, 40, 45, 50]
-    alcance = [500, 400, 300, 200, 600, 550, 650, 700]
-
-    fig_risco = go.Figure()
-    fig_risco.add_trace(go.Scatter(
-        x=influence_power, y=riscos, mode='markers', marker=dict(
-            size=[a * 0.1 for a in alcance], color="red", sizemode='area', opacity=0.6
-        ),
-        text=influenciadores
-    ))
-    fig_risco.update_layout(title="Influence Power vs. Risco", xaxis_title="Influence Power", yaxis_title="Risco")
-    st.plotly_chart(fig_risco)
 
 # Aba 5: Governança
 elif aba_selecionada == "Governança":
