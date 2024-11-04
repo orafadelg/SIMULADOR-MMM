@@ -633,14 +633,38 @@ elif aba_selecionada == "UXM":
         }
     }
     
+    dados_telas = {
+        "Onda 1 - Q1": {
+            "Login": {"Usabilidade": 72, "CX": 66, "Engajamento": 74, "Tecnologia": 81, "Utilidade": 77},
+            "Dashboard": {"Usabilidade": 73, "CX": 67, "Engajamento": 75, "Tecnologia": 82, "Utilidade": 78},
+            "Transações": {"Usabilidade": 71, "CX": 65, "Engajamento": 73, "Tecnologia": 80, "Utilidade": 76}
+        },
+        "Onda 2 - Q2": {
+            "Login": {"Usabilidade": 74, "CX": 67, "Engajamento": 76, "Tecnologia": 82, "Utilidade": 78},
+            "Dashboard": {"Usabilidade": 75, "CX": 68, "Engajamento": 77, "Tecnologia": 83, "Utilidade": 79},
+            "Transações": {"Usabilidade": 72, "CX": 66, "Engajamento": 74, "Tecnologia": 81, "Utilidade": 77}
+        },
+        "Onda 3 - Q3": {
+            "Login": {"Usabilidade": 76, "CX": 69, "Engajamento": 78, "Tecnologia": 84, "Utilidade": 80},
+            "Dashboard": {"Usabilidade": 77, "CX": 70, "Engajamento": 79, "Tecnologia": 85, "Utilidade": 81},
+            "Transações": {"Usabilidade": 75, "CX": 68, "Engajamento": 76, "Tecnologia": 83, "Utilidade": 79}
+        },
+        "Onda 4 - Q4": {
+            "Login": {"Usabilidade": 78, "CX": 72, "Engajamento": 81, "Tecnologia": 86, "Utilidade": 83},
+            "Dashboard": {"Usabilidade": 79, "CX": 73, "Engajamento": 82, "Tecnologia": 87, "Utilidade": 84},
+            "Transações": {"Usabilidade": 77, "CX": 70, "Engajamento": 78, "Tecnologia": 85, "Utilidade": 81}
+        }
+    }
+    
     if visao in ["Abas", "Telas"]:
-        itens = list(dados_abas["Onda 1 - Q1"].keys()) if visao == "Abas" else list(dados_abas["Onda 1 - Q1"].keys())
+        itens = list(dados_abas["Onda 1 - Q1"].keys()) if visao == "Abas" else list(dados_telas["Onda 1 - Q1"].keys())
         selecao = st.multiselect(f"Escolha uma {visao.lower()}", itens)
         
         if len(onda_selecionada) == 1:
+            dados_selecionados = dados_abas if visao == "Abas" else dados_telas
             fig_radar = go.Figure()
             for item in selecao:
-                valores = dados_abas[onda_selecionada[0]][item]
+                valores = dados_selecionados[onda_selecionada[0]][item]
                 fig_radar.add_trace(go.Scatterpolar(
                     r=list(valores.values()),
                     theta=list(valores.keys()),
@@ -651,8 +675,9 @@ elif aba_selecionada == "UXM":
             st.plotly_chart(fig_radar)
         elif len(selecao) == 1:
             item = selecao[0]
+            dados_selecionados = dados_abas if visao == "Abas" else dados_telas
             ondas = [onda.split(" - ")[0] for onda in onda_selecionada]
-            valores_constructos = {constructo: [dados_abas[onda][item][constructo] for onda in onda_selecionada] for constructo in ["Usabilidade", "CX", "Engajamento", "Tecnologia", "Utilidade"]}
+            valores_constructos = {constructo: [dados_selecionados[onda][item][constructo] for onda in onda_selecionada] for constructo in ["Usabilidade", "CX", "Engajamento", "Tecnologia", "Utilidade"]}
             
             fig_evolucao_constructo = go.Figure()
             for constructo, valores in valores_constructos.items():
