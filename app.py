@@ -2,13 +2,29 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
+import matplotlib.pyplot as plt
+import seaborn as sns
+import plotly.graph_objects as go
+import plotly.express as px
+from sklearn.model_selection import train_test_split, KFold, cross_val_score
+from sklearn.metrics import classification_report, confusion_matrix, mean_squared_error, r2_score
+from sklearn.ensemble import RandomForestRegressor
+from xgboost import XGBRegressor, XGBClassifier
+from sklearn.cluster import KMeans
+from datetime import datetime, timedelta
+from sklearn.preprocessing import StandardScaler
+from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score
+from sklearn.decomposition import PCA
+import statsmodels.api as sm
+from sklearn.metrics import mean_absolute_error, mean_squared_error
 
 # Título principal do aplicativo
 st.title("OKIAR 360º")
 
 # Sidebar com título e seleção de aba
 st.sidebar.title("OKIAR 360º")
-aba_selecionada = st.sidebar.selectbox("Selecione a aba", ["MMM SIMULADOR", "MMM Media Behavior", "BRAIN", "MERIDIO", "MMX", "UXM"])
+aba_selecionada = st.sidebar.selectbox("Selecione a aba", ["MMM SIMULADOR", "MMM Media Behavior", "BRAIN", "MERIDIO", "MMX", "UXM", "FLAG"])
 
 # Texto explicativo
 st.sidebar.write("**SUITE MODULAR E ALWAYS ON DE PLANEJAMENTO INTEGRADO DE MENSURAÇÃO DE MARKETING.**")
@@ -733,3 +749,275 @@ elif aba_selecionada == "UXM":
     ))
     fig_retorno_ux.update_layout(title="Impacto do UX Equity em Resultados Estratégicos", xaxis_title="Impacto (R²)", yaxis_title="Resultados")
     st.plotly_chart(fig_retorno_ux)
+
+# Parte FLAG: LTV MODELING
+elif aba_selecionada == "FLAG":
+    st.header("FLAG - Previsão de LTV & ROAS VBB")
+    def format_with_zeros(x, pos):
+        return f'{int(x):,}'.replace(",", ".")
+    df = pd.read_csv("digital_wallet_ltv_dataset.csv")
+    plt.style.use('fivethirtyeight')
+    sns.set_context("poster", font_scale=0.5)
+    
+    df_novo = df.copy()
+    app_usage_map = {'Daily': 30, 'Weekly': 4, 'Monthly': 1}
+    income_level_map = {'Low': 1, 'Middle': 5, 'High': 10}
+
+    df_novo['app_usage_numerico'] = df_novo['App_Usage_Frequency'].map(app_usage_map)
+    df_novo['income_level_numerico'] = df_novo['Income_Level'].map(income_level_map)
+    df_novo.drop(['App_Usage_Frequency', 'Income_Level'], axis=1, inplace=True)
+
+    location_map = {'Urban': 3, 'Suburban': 2, 'Rural': 1}
+    df_novo['location_numerico'] = df_novo['Location'].map(location_map)
+    df_novo.drop(['Location'], axis=1, inplace=True)
+
+    ltv_mean_by_payment = df_novo.groupby("Preferred_Payment_Method")["LTV"].mean().reset_index()
+    ltv_mean_by_payment = ltv_mean_by_payment.sort_values(by="LTV", ascending=False).reset_index(drop=True)
+    ltv_mean_by_payment["payment_score"] = range(len(ltv_mean_by_payment), 0, -1)
+
+    df_novo = df_novo.merge(ltv_mean_by_payment[['Preferred_Payment_Method', 'payment_score']], 
+                            on='Preferred_Payment_Method', how='left')
+    df_novo.rename(columns={'payment_score': 'payment_score_per_client'}, inplace=True)
+    df_novo.drop(columns=['Preferred_Payment_Method'], inplace=True)
+
+    features = df_novo.drop(['Customer_ID', 'LTV'], axis=1)
+    target = df_novo['LTV']
+
+    scaler = StandardScaler()
+    scaled_features = scaler.fit_transform(features) #normalizando
+
+    optimal_k = 5
+    num_clusters = 5
+    kmeans = KMeans(n_clusters=num_clusters, random_state=42)
+    df_novo['cluster_label'] = kmeans.fit_predict(df_novo.drop(columns=['Customer_ID', 'LTV']))
+
+    cluster_centers = pd.DataFrame(kmeans.cluster_centers_, columns=df_novo.columns.drop(['Customer_ID', 'LTV', 'cluster_label']))
+    cluster_summary = df_novo.drop(columns=['Customer_ID']).groupby('cluster_label').agg(['mean', 'median', 'std'])
+    cluster_summary.columns = ['_'.join(col).strip() for col in cluster_summary.columns.values]
+
+    features = df_novo.drop(columns=['Customer_ID', 'cluster_label', 'LTV'])
+    pca = PCA(n_components=2)
+    pca_components = pca.fit_transform(features)
+    df_novo['PCA_1'] = pca_components[:, 0]
+    df_novo['PCA_2'] = pca_components[:, 1]
+    cluster_models = {}
+    cluster_metrics = {}
+    clustered_predictions = []
+
+    # Selecionando uma distribuição para o GLM (Gamma geralmente é adequada para valores contínuos como o LTV)
+    for cluster in df_novo['cluster_label'].unique():
+        # Subconjunto dos dados para o cluster atual
+        cluster_data = df_novo[df_novo['cluster_label'] == cluster]
+        X = cluster_data.drop(columns=['Customer_ID', 'cluster_label', 'LTV'])
+        y = cluster_data['LTV']
+        
+        # Adicionando uma constante para o intercepto
+        X = sm.add_constant(X)
+
+        # Ajustando o modelo GLM com distribuição Gamma
+        glm_model = sm.GLM(y, X, family=sm.families.Gamma())
+        glm_results = glm_model.fit()
+
+        # Guardando o modelo e as métricas
+        cluster_models[cluster] = glm_results
+        cluster_metrics[cluster] = {
+            "AIC": glm_results.aic,
+            "Pseudo R-squared": glm_results.prsquared if hasattr(glm_results, 'prsquared') else None,
+            "Coefficients": glm_results.params
+        }
+
+        # Realizando previsões para o cluster atual
+        cluster_predictions = glm_results.predict(X)
+        clustered_predictions.extend(cluster_predictions)
+
+    evaluation_metrics = {}
+
+    for cluster in df_novo['cluster_label'].unique():
+        # Dados do cluster
+        cluster_data = df_novo[df_novo['cluster_label'] == cluster]
+        X_cluster = sm.add_constant(cluster_data.drop(columns=['Customer_ID', 'cluster_label', 'LTV']))
+        y_cluster = cluster_data['LTV']
+        
+        # Previsão para o cluster usando o modelo específico do cluster
+        predictions = cluster_models[cluster].predict(X_cluster)
+        
+        # Cálculo de métricas de erro
+        mae = mean_absolute_error(y_cluster, predictions)
+        mse = mean_squared_error(y_cluster, predictions)
+        rmse = np.sqrt(mse)
+
+        evaluation_metrics[cluster] = {
+            "MAE": mae,
+            "MSE": mse,
+            "RMSE": rmse
+        }
+
+    glm_models = {}
+
+    for cluster in df_novo['cluster_label'].unique():
+        # Filter data for the current cluster
+        cluster_data = df_novo[df_novo['cluster_label'] == cluster]
+        
+        # Add a constant column to the cluster_data DataFrame
+        cluster_data['const'] = 1  # This line is crucial for fixing the KeyError
+        
+        # Define independent variables for the GLM model
+        X = cluster_data[['const', 'PCA_1', 'PCA_2', 'Age', 'Total_Transactions',
+                          'Avg_Transaction_Value', 'Max_Transaction_Value', 'Min_Transaction_Value',
+                          'Total_Spent', 'Active_Days', 'Last_Transaction_Days_Ago',
+                          'Loyalty_Points_Earned', 'Referral_Count', 'Cashback_Received',
+                          'Support_Tickets_Raised', 'Issue_Resolution_Time',
+                          'Customer_Satisfaction_Score', 'app_usage_numerico',
+                          'income_level_numerico', 'location_numerico', 'payment_score_per_client']]
+        y = cluster_data['LTV']
+        
+        # Fit the GLM model with a Gamma distribution
+        model = sm.GLM(y, X, family=sm.families.Gamma()).fit()
+        
+        # Store the trained model in the dictionary
+        glm_models[cluster] = model
+
+    # Função para aplicar previsões usando os modelos GLM por cluster
+    def apply_predictions(data, glm_models):
+        predicted_ltv_values = []
+        
+        # Iterar por cada linha do df para aplicar o modelo correspondente ao cluster
+        for _, row in data.iterrows():
+            cluster = row['cluster_label']
+            model = glm_models[cluster]
+            
+            # Define os dados da linha para previsão com as colunas usadas no treino
+            row_for_prediction = row[['const', 'PCA_1', 'PCA_2', 'Age', 'Total_Transactions',
+                                      'Avg_Transaction_Value', 'Max_Transaction_Value', 'Min_Transaction_Value',
+                                      'Total_Spent', 'Active_Days', 'Last_Transaction_Days_Ago',
+                                      'Loyalty_Points_Earned', 'Referral_Count', 'Cashback_Received',
+                                      'Support_Tickets_Raised', 'Issue_Resolution_Time',
+                                      'Customer_Satisfaction_Score', 'app_usage_numerico',
+                                      'income_level_numerico', 'location_numerico', 'payment_score_per_client']]
+            
+            # Calcula a previsão e adiciona à lista
+            predicted_ltv = model.predict(row_for_prediction)[0]
+            predicted_ltv_values.append(predicted_ltv)
+        
+        # Adiciona as previsões ao dataframe original
+        data['conversion_value'] = predicted_ltv_values
+        return data
+
+    # Adiciona a constante para previsões
+    df_novo['const'] = 1
+
+    # Aplicar previsões ao df_novo e salvar em `conversion_value`
+    df_novo = apply_predictions(df_novo, glm_models)
+
+    avg_conversion_per_cluster_income = df_novo.groupby(['cluster_label', 'income_level_numerico'])['conversion_value'].mean().reset_index()
+
+    cluster_names = {2: 'Alto-Potencial', 4: 'Bons-Clientes', 1: 'Medianos', 3: 'Clientes-Ruins', 0: 'Muito-Ruins'}
+    income_names = {10: 'Alta Renda', 5: 'Mass Market Medium', 1: 'Mass Market Low'}
+
+    df_novo['cluster_label'] = df_novo['cluster_label'].map(cluster_names)
+    df_novo['income_level_numerico'] = df_novo['income_level_numerico'].map(income_names)
+
+
+    df_novo['conversion_value'] = df_novo['conversion_value'] / 50
+
+    def format_with_currency(x, pos):
+        return f'R${int(x):,}'.replace(",", ".")
+
+    avg_conversion_per_cluster_income = df_novo.groupby(['cluster_label', 'income_level_numerico'])['conversion_value'].mean().reset_index()
+
+    # Subbloco de KPIs
+    st.subheader("KPIs de Performance")
+    
+    # Filtros (apenas ilustrativos)
+    st.write("### Filtros")
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        data_selecionada = st.date_input("Selecione a data", [])
+    with col2:
+        regioes = st.multiselect("Selecione a(s) Região(ões)", ["Norte", "Nordeste", "Centro-Oeste", "Sudeste", "Sul"])
+    with col3:
+        plataformas = st.multiselect("Selecione a(s) Plataforma(s)", ["Google Ads", "Meta"])
+    
+    # Seleção de KPIs para exibir no gráfico de linhas
+    kpis_selecionados = st.multiselect("Selecione os KPIs para o gráfico de linhas", ["ROAS", "Taxa de Conversão", "CPC", "LTV Médio"])
+
+    # Gráfico de KPIs selecionados ao longo de 6 meses
+    if kpis_selecionados:
+        # Dados fictícios para visualização
+        meses = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun"]
+        dados_kpis = {
+            "ROAS": [1.2, 1.4, 1.3, 1.5, 1.6, 1.4],
+            "Taxa de Conversão": [0.03, 0.04, 0.035, 0.038, 0.04, 0.042],
+            "CPC": [0.5, 0.45, 0.48, 0.46, 0.44, 0.43],
+            "LTV Médio": [200, 220, 210, 230, 240, 225]
+        }
+        
+        fig_kpis = go.Figure()
+        for kpi in kpis_selecionados:
+            fig_kpis.add_trace(go.Scatter(x=meses, y=dados_kpis[kpi], mode="lines+markers", name=kpi))
+        
+        fig_kpis.update_layout(
+            title="KPIs de Performance (últimos 6 meses)",
+            xaxis_title="Meses",
+            yaxis_title="Valor",
+            legend_title="KPI"
+        )
+        st.plotly_chart(fig_kpis)
+
+    # Subbloco de Integridade de Conectores
+    st.subheader("Integridade de Conectores")
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        st.success("Google Ads")
+    with col2:
+        st.success("Meta")
+    with col3:
+        st.success("HubSpot")
+    with col4:
+        st.success("Azure")
+
+    # Subbloco de Modelo de LTV Core
+    st.subheader("Modelo de LTV Core")
+    
+    # Exibição da Acurácia (dados fictícios)
+    col1, col2, col3 = st.columns(3)
+    col1.metric("Acurácia - Mês 1", "80%")
+    col2.metric("Acurácia - Mês 2", "85%")
+    col3.metric("Acurácia - Mês 3", "83%")
+    col1.metric("Acurácia - Mês 4", "86%")
+    col2.metric("Acurácia - Mês 5", "82%")
+    col3.metric("Acurácia - Mês 6", "89%")
+
+    # Gráfico de "Conversion Value" por Clusters usando Plotly
+    st.subheader("Conversion Value Próximos 180 dias vs Cluster")
+    
+    # Convertendo os dados para gráfico
+    avg_conversion_per_cluster_income['income_level_numerico'] = avg_conversion_per_cluster_income['income_level_numerico'].map({
+        'Alta Renda': 'Alta Renda',
+        'Mass Market Medium': 'Média Renda',
+        'Mass Market Low': 'Baixa Renda'
+    })
+
+    fig_conversion = px.bar(
+        avg_conversion_per_cluster_income,
+        x='cluster_label',
+        y='conversion_value',
+        color='income_level_numerico',
+        title='Conversion Value próximos 180 dias vs Cluster & Renda',
+        labels={
+            'cluster_label': 'Cluster',
+            'conversion_value': 'Conversion Value Médio (R$)',
+            'income_level_numerico': 'Renda'
+        },
+        text='conversion_value'
+    )
+    fig_conversion.update_traces(texttemplate="R$ %{text:.2s}", textposition="outside")
+    fig_conversion.update_layout(
+        yaxis_tickformat="R$",
+        xaxis_title="Cluster",
+        yaxis_title="Conversion Value Médio",
+        legend_title="Nível de Renda",
+        height=500
+    )
+
+    st.plotly_chart(fig_conversion)
