@@ -655,11 +655,6 @@ elif aba_selecionada == "UXM":
             "Transações": {"Usabilidade": 77, "CX": 70, "Engajamento": 78, "Tecnologia": 85, "Utilidade": 81}
         }
     }
-    
-    if visao in ["Abas", "Telas"]:
-    # Define itens como abas ou telas, com base na escolha do usuário
-    itens = list(dados_abas["Onda 1 - Q1"].keys()) if visao == "Abas" else list(dados_telas["Onda 1 - Q1"].keys())
-    selecao = st.multiselect(f"Escolha uma {visao.lower()}", itens)
 
     if visao in ["Abas", "Telas"]:
     # Define itens como abas ou telas, com base na escolha do usuário
