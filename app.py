@@ -446,6 +446,136 @@ elif aba_selecionada == "MMX":
         fig_rquadrado.update_layout(title="R² da Satisfação por Resultado", xaxis_title="Impacto (R²)", yaxis_title="Resultados")
         st.plotly_chart(fig_rquadrado)
 
+elif aba_selecionada == "UXM":
+    st.header("COMO DEVE SER A EXPERIÊNCIA DIGITAL DO SEU CLIENTE E O QUANTO ISSO IMPORTA?")
+
+    # Seletor de ondas
+    onda_selecionada = st.multiselect("Selecione uma ou mais ondas", ["Onda 1 - Q1", "Onda 2 - Q2", "Onda 3 - Q3", "Onda 4 - Q4"], ["Onda 1 - Q1"])
+    
+    # Dados fictícios para as ondas
+    dados_ondas = {
+        "Onda 1 - Q1": {"Usabilidade": 70, "CX": 65, "Engajamento": 75, "Tecnologia": 85, "Utilidade": 80, "UX Equity": 77},
+        "Onda 2 - Q2": {"Usabilidade": 75, "CX": 68, "Engajamento": 78, "Tecnologia": 88, "Utilidade": 82, "UX Equity": 79},
+        "Onda 3 - Q3": {"Usabilidade": 80, "CX": 70, "Engajamento": 80, "Tecnologia": 90, "Utilidade": 85, "UX Equity": 81},
+        "Onda 4 - Q4": {"Usabilidade": 82, "CX": 72, "Engajamento": 83, "Tecnologia": 92, "Utilidade": 88, "UX Equity": 83},
+    }
+    
+    # Verificar se apenas uma onda foi selecionada para exibir os blocos de KPIs
+    if len(onda_selecionada) == 1:
+        st.subheader("Visão Geral")
+        col1, col2, col3, col4, col5, col6 = st.columns(6)
+        
+        valores = dados_ondas[onda_selecionada[0]]
+        col1.metric("Usabilidade", f"{valores['Usabilidade']}")
+        col2.metric("CX", f"{valores['CX']}")
+        col3.metric("Engajamento", f"{valores['Engajamento']}")
+        col4.metric("Tecnologia", f"{valores['Tecnologia']}")
+        col5.metric("Utilidade", f"{valores['Utilidade']}")
+        col6.metric("UX Equity", f"{valores['UX Equity']}")
+    else:
+        st.subheader("Evolução dos Constructos")
+        ondas = [onda.split(" - ")[0] for onda in onda_selecionada]
+        
+        fig_evolucao = go.Figure()
+        for constructo in ["Usabilidade", "CX", "Engajamento", "Tecnologia", "Utilidade", "UX Equity"]:
+            valores_constructo = [dados_ondas[onda][constructo] for onda in onda_selecionada]
+            fig_evolucao.add_trace(go.Scatter(x=ondas, y=valores_constructo, mode="lines+markers", name=constructo,
+                                              line=dict(dash="dash" if constructo != "UX Equity" else "solid")))
+        fig_evolucao.update_layout(title="Evolução dos Constructos", xaxis_title="Onda", yaxis_title="Pontuação")
+        st.plotly_chart(fig_evolucao)
+
+    # Seletor de visão para abas ou telas
+    visao = st.radio("Selecione a visão", ["Visão Geral", "Abas", "Telas"])
+    
+    # Dados fictícios para abas e telas
+    dados_abas = {
+        "Home": {"Usabilidade": 78, "CX": 70, "Engajamento": 75, "Tecnologia": 85, "Utilidade": 82},
+        "Produtos": {"Usabilidade": 76, "CX": 72, "Engajamento": 74, "Tecnologia": 86, "Utilidade": 83},
+        "Suporte": {"Usabilidade": 74, "CX": 68, "Engajamento": 73, "Tecnologia": 82, "Utilidade": 80},
+        "Conta": {"Usabilidade": 77, "CX": 69, "Engajamento": 76, "Tecnologia": 87, "Utilidade": 81},
+    }
+    
+    dados_telas = {
+        "Tela A": {"Usabilidade": 80, "CX": 74, "Engajamento": 78, "Tecnologia": 88, "Utilidade": 85},
+        "Tela B": {"Usabilidade": 75, "CX": 70, "Engajamento": 76, "Tecnologia": 84, "Utilidade": 80},
+        "Tela C": {"Usabilidade": 78, "CX": 72, "Engajamento": 77, "Tecnologia": 86, "Utilidade": 82},
+    }
+
+    if visao in ["Abas", "Telas"]:
+        # Selecionar abas ou telas para comparação
+        itens = list(dados_abas.keys()) if visao == "Abas" else list(dados_telas.keys())
+        selecao = st.multiselect(f"Selecione {visao} para Comparação", itens)
+        
+        if len(onda_selecionada) == 1:
+            # Exibir gráfico radar para comparação de uma única onda
+            fig_radar = go.Figure()
+            for item in selecao:
+                valores = dados_abas[item] if visao == "Abas" else dados_telas[item]
+                fig_radar.add_trace(go.Scatterpolar(
+                    r=list(valores.values()),
+                    theta=list(valores.keys()),
+                    fill='toself',
+                    name=item
+                ))
+            fig_radar.update_layout(title=f"Comparação de {visao}")
+            st.plotly_chart(fig_radar)
+        elif len(selecao) == 1:
+            # Exibir gráfico de evolução se mais de uma onda for selecionada e apenas uma aba/tela for selecionada
+            item = selecao[0]
+            valores_constructos = {constructo: [dados_abas[item][constructo] if visao == "Abas" else dados_telas[item][constructo] for onda in onda_selecionada] for constructo in ["Usabilidade", "CX", "Engajamento", "Tecnologia", "Utilidade"]}
+            
+            fig_evolucao_constructo = go.Figure()
+            for constructo, valores in valores_constructos.items():
+                fig_evolucao_constructo.add_trace(go.Scatter(x=ondas, y=valores, mode="lines+markers", name=constructo))
+            fig_evolucao_constructo.update_layout(title=f"Evolução de Constructos para {item} nas Ondas Selecionadas", xaxis_title="Onda", yaxis_title="Pontuação")
+            st.plotly_chart(fig_evolucao_constructo)
+
+    # Bloco de matriz de prioridades de UX
+    st.subheader("Matriz de Prioridades de UX")
+    fatores = ["Facilidade", "Clareza", "Acessibilidade", "Atendimento", "Resolução", "Eficiência", "Diversão", "Interação", "Personalização"]
+    importancia_fatores = [0.75, 0.6, 0.8, 0.7, 0.85, 0.9, 0.65, 0.7, 0.9]
+    performance_fatores = [0.7, 0.65, 0.75, 0.85, 0.8, 0.88, 0.68, 0.6, 0.8]
+
+    fig_matriz_ux = go.Figure()
+    fig_matriz_ux.add_trace(go.Scatter(
+        x=performance_fatores,
+        y=importancia_fatores,
+        mode='markers+text',
+        text=fatores,
+        textposition="top center",
+        marker=dict(size=12, color="purple")
+    ))
+    fig_matriz_ux.update_layout(title="Performance vs. Importância dos Fatores de UX", xaxis_title="Performance", yaxis_title="Importância")
+    st.plotly_chart(fig_matriz_ux)
+
+    # Bloco final: Retorno de UX para o Negócio
+    st.subheader("Retorno de UX para o Negócio")
+    resultados = ["Contratação de Crédito", "Uso do App", "Principalidade", "NPS", "Branding", "Investimentos"]
+    impacto_ux_equity = [0.7, 0.65, 0.8, 0.75, 0.6, 0.85]
+
+    fig_retorno_ux = go.Figure(go.Bar(
+        x=impacto_ux_equity,
+        y=resultados,
+        orientation='h',
+        marker=dict(color="green"),
+        text=[f"{val:.0%}" for val in impacto_ux_equity],
+        textposition="outside"
+    ))
+    fig_retorno_ux.update_layout(title="Impacto do UX Equity em Resultados Estratégicos", xaxis_title="Impacto (R²)", yaxis_title="Resultados")
+    st.plotly_chart(fig_retorno_ux)
+
+
+
+
+
+Você disse:
+Os valores de uma onda para outra precisam variar, alguns um pouco para cima e outros um pouco para baixo. Em muitos deles você manteve os mesmos valores.
+Além disso, precisa ter um pouco de variabilidade interna também, exemplo, entre abas e telas algumas devem ser um pouco melhores e piores que outras em alguns aspectos.
+Refaça todo o código por favor. Ficarei aguardando.
+O ChatGPT disse:
+ChatGPT
+python
+Copiar código
 import streamlit as st
 import numpy as np
 import plotly.graph_objects as go
@@ -566,4 +696,3 @@ elif aba_selecionada == "UXM":
     ))
     fig_retorno_ux.update_layout(title="Impacto do UX Equity em Resultados Estratégicos", xaxis_title="Impacto (R²)", yaxis_title="Resultados")
     st.plotly_chart(fig_retorno_ux)
-
