@@ -658,8 +658,8 @@ elif aba_selecionada == "UXM":
 
     if visao in ["Abas", "Telas"]:
     # Define itens como abas ou telas, com base na escolha do usuário
-    itens = list(dados_abas["Onda 1 - Q1"].keys()) if visao == "Abas" else list(dados_telas["Onda 1 - Q1"].keys())
-    selecao = st.multiselect(f"Escolha uma {visao.lower()}", itens)
+        itens = list(dados_abas["Onda 1 - Q1"].keys()) if visao == "Abas" else list(dados_telas["Onda 1 - Q1"].keys())
+        selecao = st.multiselect(f"Escolha uma {visao.lower()}", itens)
 
     if len(onda_selecionada) == 1:
         # Se apenas uma onda é selecionada, mostrar gráfico radar para comparação de itens
