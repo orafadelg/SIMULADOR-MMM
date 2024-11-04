@@ -607,22 +607,30 @@ elif aba_selecionada == "UXM":
 
     # Dados variáveis para abas e telas com variações por onda
     dados_abas = {
-        "Onda 1 - Q1": {"Home": {"Usabilidade": 74, "CX": 66, "Engajamento": 76, "Tecnologia": 82, "Utilidade": 79},
-                        "Produtos": {"Usabilidade": 70, "CX": 68, "Engajamento": 74, "Tecnologia": 81, "Utilidade": 77},
-                        "Suporte": {"Usabilidade": 72, "CX": 64, "Engajamento": 75, "Tecnologia": 80, "Utilidade": 76},
-                        "Conta": {"Usabilidade": 73, "CX": 65, "Engajamento": 77, "Tecnologia": 83, "Utilidade": 78}},
-        "Onda 2 - Q2": {"Home": {"Usabilidade": 75, "CX": 67, "Engajamento": 78, "Tecnologia": 83, "Utilidade": 80},
-                        "Produtos": {"Usabilidade": 72, "CX": 69, "Engajamento": 75, "Tecnologia": 82, "Utilidade": 78},
-                        "Suporte": {"Usabilidade": 73, "CX": 66, "Engajamento": 76, "Tecnologia": 81, "Utilidade": 77},
-                        "Conta": {"Usabilidade": 74, "CX": 68, "Engajamento": 78, "Tecnologia": 84, "Utilidade": 79}},
-        "Onda 3 - Q3": {"Home": {"Usabilidade": 77, "CX": 70, "Engajamento": 79, "Tecnologia": 85, "Utilidade": 82},
-                        "Produtos": {"Usabilidade": 74, "CX": 72, "Engajamento": 77, "Tecnologia": 84, "Utilidade": 80},
-                        "Suporte": {"Usabilidade": 75, "CX": 68, "Engajamento": 78, "Tecnologia": 83, "Utilidade": 81},
-                        "Conta": {"Usabilidade": 76, "CX": 71, "Engajamento": 79, "Tecnologia": 86, "Utilidade": 83}},
-        "Onda 4 - Q4": {"Home": {"Usabilidade": 79, "CX": 72, "Engajamento": 82, "Tecnologia": 87, "Utilidade": 84},
-                        "Produtos": {"Usabilidade": 76, "CX": 73, "Engajamento": 80, "Tecnologia": 86, "Utilidade": 82},
-                        "Suporte": {"Usabilidade": 77, "CX": 70, "Engajamento": 81, "Tecnologia": 85, "Utilidade": 83},
-                        "Conta": {"Usabilidade": 78, "CX": 73, "Engajamento": 82, "Tecnologia": 88, "Utilidade": 85}}
+        "Onda 1 - Q1": {
+            "Home": {"Usabilidade": 74, "CX": 68, "Engajamento": 77, "Tecnologia": 83, "Utilidade": 78},
+            "Produtos": {"Usabilidade": 71, "CX": 67, "Engajamento": 75, "Tecnologia": 80, "Utilidade": 76},
+            "Suporte": {"Usabilidade": 72, "CX": 65, "Engajamento": 73, "Tecnologia": 79, "Utilidade": 74},
+            "Conta": {"Usabilidade": 73, "CX": 66, "Engajamento": 76, "Tecnologia": 82, "Utilidade": 77}
+        },
+        "Onda 2 - Q2": {
+            "Home": {"Usabilidade": 76, "CX": 69, "Engajamento": 78, "Tecnologia": 84, "Utilidade": 79},
+            "Produtos": {"Usabilidade": 73, "CX": 68, "Engajamento": 76, "Tecnologia": 82, "Utilidade": 78},
+            "Suporte": {"Usabilidade": 71, "CX": 67, "Engajamento": 74, "Tecnologia": 80, "Utilidade": 76},
+            "Conta": {"Usabilidade": 75, "CX": 69, "Engajamento": 77, "Tecnologia": 83, "Utilidade": 80}
+        },
+        "Onda 3 - Q3": {
+            "Home": {"Usabilidade": 78, "CX": 71, "Engajamento": 80, "Tecnologia": 85, "Utilidade": 81},
+            "Produtos": {"Usabilidade": 74, "CX": 70, "Engajamento": 78, "Tecnologia": 83, "Utilidade": 79},
+            "Suporte": {"Usabilidade": 73, "CX": 68, "Engajamento": 76, "Tecnologia": 82, "Utilidade": 78},
+            "Conta": {"Usabilidade": 77, "CX": 70, "Engajamento": 79, "Tecnologia": 86, "Utilidade": 82}
+        },
+        "Onda 4 - Q4": {
+            "Home": {"Usabilidade": 80, "CX": 73, "Engajamento": 82, "Tecnologia": 87, "Utilidade": 83},
+            "Produtos": {"Usabilidade": 76, "CX": 72, "Engajamento": 80, "Tecnologia": 85, "Utilidade": 81},
+            "Suporte": {"Usabilidade": 75, "CX": 70, "Engajamento": 78, "Tecnologia": 84, "Utilidade": 80},
+            "Conta": {"Usabilidade": 79, "CX": 74, "Engajamento": 81, "Tecnologia": 88, "Utilidade": 84}
+        }
     }
     
     if visao in ["Abas", "Telas"]:
