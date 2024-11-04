@@ -655,35 +655,50 @@ elif aba_selecionada == "UXM":
             "Transações": {"Usabilidade": 77, "CX": 70, "Engajamento": 78, "Tecnologia": 85, "Utilidade": 81}
         }
     }
-    
+
     if visao in ["Abas", "Telas"]:
-        itens = list(dados_abas["Onda 1 - Q1"].keys()) if visao == "Abas" else list(dados_telas["Onda 1 - Q1"].keys())
-        selecao = st.multiselect(f"Escolha uma {visao.lower()}", itens)
+    # Define itens como abas ou telas, com base na escolha do usuário
+    itens = list(dados_abas["Onda 1 - Q1"].keys()) if visao == "Abas" else list(dados_telas["Onda 1 - Q1"].keys())
+    selecao = st.multiselect(f"Escolha uma {visao.lower()}", itens)
+
+    if len(onda_selecionada) == 1:
+        # Se apenas uma onda é selecionada, mostrar gráfico radar para comparação de itens
+        dados_selecionados = dados_abas if visao == "Abas" else dados_telas
+        fig_radar = go.Figure()
+        for item in selecao:
+            valores = dados_selecionados[onda_selecionada[0]][item]
+            fig_radar.add_trace(go.Scatterpolar(
+                r=list(valores.values()),
+                theta=list(valores.keys()),
+                fill='toself',
+                name=item
+            ))
+        fig_radar.update_layout(title=f"Comparação de {visao} - {onda_selecionada[0]}", polar=dict(radialaxis=dict(visible=True, range=[60, 90])))
+        st.plotly_chart(fig_radar)
+
+    elif len(selecao) == 1:
+        # Se várias ondas são selecionadas mas apenas um item (aba ou tela), mostrar evolução dos constructos
+        item = selecao[0]
+        dados_selecionados = dados_abas if visao == "Abas" else dados_telas
+        ondas = [onda.split(" - ")[0] for onda in onda_selecionada]
         
-        if len(onda_selecionada) == 1:
-            dados_selecionados = dados_abas if visao == "Abas" else dados_telas
-            fig_radar = go.Figure()
-            for item in selecao:
-                valores = dados_selecionados[onda_selecionada[0]][item]
-                fig_radar.add_trace(go.Scatterpolar(
-                    r=list(valores.values()),
-                    theta=list(valores.keys()),
-                    fill='toself',
-                    name=item
-                ))
-            fig_radar.update_layout(title=f"Comparação de {visao}")
-            st.plotly_chart(fig_radar)
-        elif len(selecao) == 1:
-            item = selecao[0]
-            dados_selecionados = dados_abas if visao == "Abas" else dados_telas
-            ondas = [onda.split(" - ")[0] for onda in onda_selecionada]
-            valores_constructos = {constructo: [dados_selecionados[onda][item][constructo] for onda in onda_selecionada] for constructo in ["Usabilidade", "CX", "Engajamento", "Tecnologia", "Utilidade"]}
-            
-            fig_evolucao_constructo = go.Figure()
-            for constructo, valores in valores_constructos.items():
-                fig_evolucao_constructo.add_trace(go.Scatter(x=ondas, y=valores, mode="lines+markers", name=constructo))
-            fig_evolucao_constructo.update_layout(title=f"Evolução de Constructos para {item} nas Ondas Selecionadas", xaxis_title="Onda", yaxis_title="Pontuação")
-            st.plotly_chart(fig_evolucao_constructo)
+        # Preparar dados para evolução dos constructos ao longo das ondas
+        valores_constructos = {
+            constructo: [dados_selecionados[onda][item][constructo] for onda in onda_selecionada] 
+            for constructo in ["Usabilidade", "CX", "Engajamento", "Tecnologia", "Utilidade"]
+        }
+
+        fig_evolucao_constructo = go.Figure()
+        for constructo, valores in valores_constructos.items():
+            fig_evolucao_constructo.add_trace(go.Scatter(
+                x=ondas,
+                y=valores,
+                mode="lines+markers",
+                name=constructo,
+                line=dict(shape='linear')
+            ))
+        fig_evolucao_constructo.update_layout(title=f"Evolução dos Constructos para {item} nas Ondas Selecionadas", xaxis_title="Onda", yaxis_title="Pontuação")
+        st.plotly_chart(fig_evolucao_constructo)
 
     # Bloco de matriz de prioridades de UX
     st.subheader("Matriz de Prioridades de UX")
