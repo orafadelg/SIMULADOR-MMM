@@ -574,9 +574,9 @@ elif aba_selecionada == "UXM":
     # Dados fictícios com variações entre ondas e itens
     dados_ondas = {
         "Onda 1 - Q1": {"Usabilidade": 72, "CX": 68, "Engajamento": 75, "Tecnologia": 83, "Utilidade": 78, "UX Equity": 76},
-        "Onda 2 - Q2": {"Usabilidade": 75, "CX": 70, "Engajamento": 77, "Tecnologia": 85, "Utilidade": 80, "UX Equity": 78},
-        "Onda 3 - Q3": {"Usabilidade": 77, "CX": 72, "Engajamento": 79, "Tecnologia": 88, "Utilidade": 82, "UX Equity": 80},
-        "Onda 4 - Q4": {"Usabilidade": 80, "CX": 74, "Engajamento": 82, "Tecnologia": 90, "Utilidade": 85, "UX Equity": 82},
+        "Onda 2 - Q2": {"Usabilidade": 74, "CX": 69, "Engajamento": 77, "Tecnologia": 84, "Utilidade": 80, "UX Equity": 78},
+        "Onda 3 - Q3": {"Usabilidade": 76, "CX": 70, "Engajamento": 79, "Tecnologia": 87, "Utilidade": 81, "UX Equity": 79},
+        "Onda 4 - Q4": {"Usabilidade": 79, "CX": 72, "Engajamento": 82, "Tecnologia": 89, "Utilidade": 84, "UX Equity": 81},
     }
     
     # Exibir KPIs se apenas uma onda for selecionada
@@ -605,29 +605,34 @@ elif aba_selecionada == "UXM":
     # Seletor de visão para abas ou telas
     visao = st.radio("Selecione a visão", ["Visão Geral", "Abas", "Telas"])
 
-    # Dados variáveis para abas e telas
+    # Dados variáveis para abas e telas com variações por onda
     dados_abas = {
-        "Home": {"Usabilidade": 76, "CX": 68, "Engajamento": 77, "Tecnologia": 82, "Utilidade": 78},
-        "Produtos": {"Usabilidade": 74, "CX": 70, "Engajamento": 76, "Tecnologia": 84, "Utilidade": 80},
-        "Suporte": {"Usabilidade": 72, "CX": 66, "Engajamento": 75, "Tecnologia": 79, "Utilidade": 77},
-        "Conta": {"Usabilidade": 75, "CX": 69, "Engajamento": 78, "Tecnologia": 85, "Utilidade": 79},
+        "Onda 1 - Q1": {"Home": {"Usabilidade": 74, "CX": 66, "Engajamento": 76, "Tecnologia": 82, "Utilidade": 79},
+                        "Produtos": {"Usabilidade": 70, "CX": 68, "Engajamento": 74, "Tecnologia": 81, "Utilidade": 77},
+                        "Suporte": {"Usabilidade": 72, "CX": 64, "Engajamento": 75, "Tecnologia": 80, "Utilidade": 76},
+                        "Conta": {"Usabilidade": 73, "CX": 65, "Engajamento": 77, "Tecnologia": 83, "Utilidade": 78}},
+        "Onda 2 - Q2": {"Home": {"Usabilidade": 75, "CX": 67, "Engajamento": 78, "Tecnologia": 83, "Utilidade": 80},
+                        "Produtos": {"Usabilidade": 72, "CX": 69, "Engajamento": 75, "Tecnologia": 82, "Utilidade": 78},
+                        "Suporte": {"Usabilidade": 73, "CX": 66, "Engajamento": 76, "Tecnologia": 81, "Utilidade": 77},
+                        "Conta": {"Usabilidade": 74, "CX": 68, "Engajamento": 78, "Tecnologia": 84, "Utilidade": 79}},
+        "Onda 3 - Q3": {"Home": {"Usabilidade": 77, "CX": 70, "Engajamento": 79, "Tecnologia": 85, "Utilidade": 82},
+                        "Produtos": {"Usabilidade": 74, "CX": 72, "Engajamento": 77, "Tecnologia": 84, "Utilidade": 80},
+                        "Suporte": {"Usabilidade": 75, "CX": 68, "Engajamento": 78, "Tecnologia": 83, "Utilidade": 81},
+                        "Conta": {"Usabilidade": 76, "CX": 71, "Engajamento": 79, "Tecnologia": 86, "Utilidade": 83}},
+        "Onda 4 - Q4": {"Home": {"Usabilidade": 79, "CX": 72, "Engajamento": 82, "Tecnologia": 87, "Utilidade": 84},
+                        "Produtos": {"Usabilidade": 76, "CX": 73, "Engajamento": 80, "Tecnologia": 86, "Utilidade": 82},
+                        "Suporte": {"Usabilidade": 77, "CX": 70, "Engajamento": 81, "Tecnologia": 85, "Utilidade": 83},
+                        "Conta": {"Usabilidade": 78, "CX": 73, "Engajamento": 82, "Tecnologia": 88, "Utilidade": 85}}
     }
     
-    dados_telas = {
-        "Tela A": {"Usabilidade": 80, "CX": 72, "Engajamento": 78, "Tecnologia": 85, "Utilidade": 82},
-        "Tela B": {"Usabilidade": 75, "CX": 68, "Engajamento": 76, "Tecnologia": 82, "Utilidade": 79},
-        "Tela C": {"Usabilidade": 78, "CX": 70, "Engajamento": 77, "Tecnologia": 83, "Utilidade": 81},
-    }
-
     if visao in ["Abas", "Telas"]:
-        itens = list(dados_abas.keys()) if visao == "Abas" else list(dados_telas.keys())
-        selecao = st.multiselect(f"Selecione {visao} para Comparação", itens)
+        itens = list(dados_abas["Onda 1 - Q1"].keys()) if visao == "Abas" else list(dados_abas["Onda 1 - Q1"].keys())
+        selecao = st.multiselect(f"Escolha uma {visao.lower()}", itens)
         
         if len(onda_selecionada) == 1:
-            # Exibir gráfico radar para comparação de uma única onda
             fig_radar = go.Figure()
             for item in selecao:
-                valores = dados_abas[item] if visao == "Abas" else dados_telas[item]
+                valores = dados_abas[onda_selecionada[0]][item]
                 fig_radar.add_trace(go.Scatterpolar(
                     r=list(valores.values()),
                     theta=list(valores.keys()),
@@ -637,9 +642,9 @@ elif aba_selecionada == "UXM":
             fig_radar.update_layout(title=f"Comparação de {visao}")
             st.plotly_chart(fig_radar)
         elif len(selecao) == 1:
-            # Exibir gráfico de evolução se mais de uma onda for selecionada e apenas uma aba/tela for selecionada
             item = selecao[0]
-            valores_constructos = {constructo: [dados_abas[item][constructo] if visao == "Abas" else dados_telas[item][constructo] for onda in onda_selecionada] for constructo in ["Usabilidade", "CX", "Engajamento", "Tecnologia", "Utilidade"]}
+            ondas = [onda.split(" - ")[0] for onda in onda_selecionada]
+            valores_constructos = {constructo: [dados_abas[onda][item][constructo] for onda in onda_selecionada] for constructo in ["Usabilidade", "CX", "Engajamento", "Tecnologia", "Utilidade"]}
             
             fig_evolucao_constructo = go.Figure()
             for constructo, valores in valores_constructos.items():
