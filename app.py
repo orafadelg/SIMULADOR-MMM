@@ -446,26 +446,29 @@ elif aba_selecionada == "MMX":
         fig_rquadrado.update_layout(title="R² da Satisfação por Resultado", xaxis_title="Impacto (R²)", yaxis_title="Resultados")
         st.plotly_chart(fig_rquadrado)
 
+import streamlit as st
+import numpy as np
+import plotly.graph_objects as go
+
 # Parte UXM: Modelo de UX e Retorno de Experiência
 elif aba_selecionada == "UXM":
     st.header("COMO DEVE SER A EXPERIÊNCIA DIGITAL DO SEU CLIENTE E O QUANTO ISSO IMPORTA?")
 
     # Seletor de ondas
     onda_selecionada = st.multiselect("Selecione uma ou mais ondas", ["Onda 1 - Q1", "Onda 2 - Q2", "Onda 3 - Q3", "Onda 4 - Q4"], ["Onda 1 - Q1"])
-    
-    # Dados fictícios para as ondas
+
+    # Dados fictícios com variações entre ondas e itens
     dados_ondas = {
-        "Onda 1 - Q1": {"Usabilidade": 70, "CX": 65, "Engajamento": 75, "Tecnologia": 85, "Utilidade": 80, "UX Equity": 77},
-        "Onda 2 - Q2": {"Usabilidade": 75, "CX": 68, "Engajamento": 78, "Tecnologia": 88, "Utilidade": 82, "UX Equity": 79},
-        "Onda 3 - Q3": {"Usabilidade": 80, "CX": 70, "Engajamento": 80, "Tecnologia": 90, "Utilidade": 85, "UX Equity": 81},
-        "Onda 4 - Q4": {"Usabilidade": 82, "CX": 72, "Engajamento": 83, "Tecnologia": 92, "Utilidade": 88, "UX Equity": 83},
+        "Onda 1 - Q1": {"Usabilidade": 72, "CX": 68, "Engajamento": 75, "Tecnologia": 83, "Utilidade": 78, "UX Equity": 76},
+        "Onda 2 - Q2": {"Usabilidade": 75, "CX": 70, "Engajamento": 77, "Tecnologia": 85, "Utilidade": 80, "UX Equity": 78},
+        "Onda 3 - Q3": {"Usabilidade": 77, "CX": 72, "Engajamento": 79, "Tecnologia": 88, "Utilidade": 82, "UX Equity": 80},
+        "Onda 4 - Q4": {"Usabilidade": 80, "CX": 74, "Engajamento": 82, "Tecnologia": 90, "Utilidade": 85, "UX Equity": 82},
     }
     
-    # Verificar se apenas uma onda foi selecionada para exibir os blocos de KPIs
+    # Exibir KPIs se apenas uma onda for selecionada
     if len(onda_selecionada) == 1:
         st.subheader("Visão Geral")
         col1, col2, col3, col4, col5, col6 = st.columns(6)
-        
         valores = dados_ondas[onda_selecionada[0]]
         col1.metric("Usabilidade", f"{valores['Usabilidade']}")
         col2.metric("CX", f"{valores['CX']}")
@@ -476,8 +479,8 @@ elif aba_selecionada == "UXM":
     else:
         st.subheader("Evolução dos Constructos")
         ondas = [onda.split(" - ")[0] for onda in onda_selecionada]
-        
         fig_evolucao = go.Figure()
+        
         for constructo in ["Usabilidade", "CX", "Engajamento", "Tecnologia", "Utilidade", "UX Equity"]:
             valores_constructo = [dados_ondas[onda][constructo] for onda in onda_selecionada]
             fig_evolucao.add_trace(go.Scatter(x=ondas, y=valores_constructo, mode="lines+markers", name=constructo,
@@ -487,23 +490,22 @@ elif aba_selecionada == "UXM":
 
     # Seletor de visão para abas ou telas
     visao = st.radio("Selecione a visão", ["Visão Geral", "Abas", "Telas"])
-    
-    # Dados fictícios para abas e telas
+
+    # Dados variáveis para abas e telas
     dados_abas = {
-        "Home": {"Usabilidade": 78, "CX": 70, "Engajamento": 75, "Tecnologia": 85, "Utilidade": 82},
-        "Produtos": {"Usabilidade": 76, "CX": 72, "Engajamento": 74, "Tecnologia": 86, "Utilidade": 83},
-        "Suporte": {"Usabilidade": 74, "CX": 68, "Engajamento": 73, "Tecnologia": 82, "Utilidade": 80},
-        "Conta": {"Usabilidade": 77, "CX": 69, "Engajamento": 76, "Tecnologia": 87, "Utilidade": 81},
+        "Home": {"Usabilidade": 76, "CX": 68, "Engajamento": 77, "Tecnologia": 82, "Utilidade": 78},
+        "Produtos": {"Usabilidade": 74, "CX": 70, "Engajamento": 76, "Tecnologia": 84, "Utilidade": 80},
+        "Suporte": {"Usabilidade": 72, "CX": 66, "Engajamento": 75, "Tecnologia": 79, "Utilidade": 77},
+        "Conta": {"Usabilidade": 75, "CX": 69, "Engajamento": 78, "Tecnologia": 85, "Utilidade": 79},
     }
     
     dados_telas = {
-        "Tela A": {"Usabilidade": 80, "CX": 74, "Engajamento": 78, "Tecnologia": 88, "Utilidade": 85},
-        "Tela B": {"Usabilidade": 75, "CX": 70, "Engajamento": 76, "Tecnologia": 84, "Utilidade": 80},
-        "Tela C": {"Usabilidade": 78, "CX": 72, "Engajamento": 77, "Tecnologia": 86, "Utilidade": 82},
+        "Tela A": {"Usabilidade": 80, "CX": 72, "Engajamento": 78, "Tecnologia": 85, "Utilidade": 82},
+        "Tela B": {"Usabilidade": 75, "CX": 68, "Engajamento": 76, "Tecnologia": 82, "Utilidade": 79},
+        "Tela C": {"Usabilidade": 78, "CX": 70, "Engajamento": 77, "Tecnologia": 83, "Utilidade": 81},
     }
 
     if visao in ["Abas", "Telas"]:
-        # Selecionar abas ou telas para comparação
         itens = list(dados_abas.keys()) if visao == "Abas" else list(dados_telas.keys())
         selecao = st.multiselect(f"Selecione {visao} para Comparação", itens)
         
@@ -534,8 +536,8 @@ elif aba_selecionada == "UXM":
     # Bloco de matriz de prioridades de UX
     st.subheader("Matriz de Prioridades de UX")
     fatores = ["Facilidade", "Clareza", "Acessibilidade", "Atendimento", "Resolução", "Eficiência", "Diversão", "Interação", "Personalização"]
-    importancia_fatores = [0.75, 0.6, 0.8, 0.7, 0.85, 0.9, 0.65, 0.7, 0.9]
-    performance_fatores = [0.7, 0.65, 0.75, 0.85, 0.8, 0.88, 0.68, 0.6, 0.8]
+    importancia_fatores = [0.72, 0.6, 0.85, 0.68, 0.9, 0.88, 0.67, 0.7, 0.88]
+    performance_fatores = [0.7, 0.63, 0.8, 0.83, 0.78, 0.85, 0.7, 0.66, 0.84]
 
     fig_matriz_ux = go.Figure()
     fig_matriz_ux.add_trace(go.Scatter(
@@ -564,3 +566,4 @@ elif aba_selecionada == "UXM":
     ))
     fig_retorno_ux.update_layout(title="Impacto do UX Equity em Resultados Estratégicos", xaxis_title="Impacto (R²)", yaxis_title="Resultados")
     st.plotly_chart(fig_retorno_ux)
+
