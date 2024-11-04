@@ -2,3 +2,8 @@ streamlit
 plotly==5.3.1
 numpy
 pandas
+matplotlib
+seaborn
+scikit-learn
+xgboost
+statsmodels
