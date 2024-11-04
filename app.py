@@ -564,22 +564,6 @@ elif aba_selecionada == "UXM":
     fig_retorno_ux.update_layout(title="Impacto do UX Equity em Resultados Estratégicos", xaxis_title="Impacto (R²)", yaxis_title="Resultados")
     st.plotly_chart(fig_retorno_ux)
 
-
-
-
-
-Você disse:
-Os valores de uma onda para outra precisam variar, alguns um pouco para cima e outros um pouco para baixo. Em muitos deles você manteve os mesmos valores.
-Além disso, precisa ter um pouco de variabilidade interna também, exemplo, entre abas e telas algumas devem ser um pouco melhores e piores que outras em alguns aspectos.
-Refaça todo o código por favor. Ficarei aguardando.
-O ChatGPT disse:
-ChatGPT
-python
-Copiar código
-import streamlit as st
-import numpy as np
-import plotly.graph_objects as go
-
 # Parte UXM: Modelo de UX e Retorno de Experiência
 elif aba_selecionada == "UXM":
     st.header("COMO DEVE SER A EXPERIÊNCIA DIGITAL DO SEU CLIENTE E O QUANTO ISSO IMPORTA?")
